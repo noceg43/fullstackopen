@@ -1,33 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+const Hello = (props) => {
+  console.log(props)
+  return (
+    <div>
+      <p>
+        Hello {props.name}, you are {props.age} years old
+      </p>
+    </div>
+  )
+}
 
-function App() {
-  const [count, setCount] = useState(0)
+// This will create a footer element (HTML tag), not your custom Footer component.
+const footer = () => {
+  return (
+    <div>
+      greeting app created by <a href='https://github.com/mluukkai'>mluukkai</a>
+    </div>
+  )
+}
 
+// But this will create the custom Footer component if it's defined properly:
+const Footer = () => {
+  return (
+    <div>
+      greeting app created by <a href='https://github.com/mluukkai'>mluukkai</a>
+    </div>
+  )
+}
+
+
+const App = () => {
+  const name = 'Peter'
+  const age = 10
+
+  // When it's necessary to return multiple components,
+  // do not insert in the root component any html component like <div> or <p>
+  // instead use the react fragment <></>
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Greetings</h1>
+      <Hello name='Maya' age={26 + 10} />
+      <Hello name={name} age={age} />
+      <Footer />
     </>
   )
 }
