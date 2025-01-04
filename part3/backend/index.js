@@ -4,7 +4,24 @@ const express = require('express')
 const app = express()
 
 // activate json parser
+// it's a middleware that parses incoming requests with JSON payloads
 app.use(express.json())
+
+// another middleware used to log
+const requestLogger = (request, response, next) => {
+    // execute this before moving to the next middleware
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    // move to the next middleware
+    next()
+}
+app.use(requestLogger)
+// the middlewares follows the order they are defined
+// so let's execute all the middlewares before the routes
+// execute the routes
+// and then execute the middleware for unknown routes
 
 let notes = [
     {
@@ -70,6 +87,13 @@ app.post('/api/notes', (request, response) => {
 
     response.json(note)
 })
+
+
+// Catch-all middleware for non-existent routes (404)
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' });
+  };
+  app.use(unknownEndpoint);
 
 const PORT = 3001
 app.listen(PORT, () => {
