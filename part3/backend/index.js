@@ -1,7 +1,10 @@
 // do not use ES module it's not suggested in this course
 const express = require('express')
+const cors = require('cors')
 
 const app = express()
+app.use(cors())
+
 
 // activate json parser
 // it's a middleware that parses incoming requests with JSON payloads
@@ -95,7 +98,9 @@ const unknownEndpoint = (request, response) => {
   };
   app.use(unknownEndpoint);
 
-const PORT = 3001
+
+// 
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
