@@ -1,4 +1,6 @@
 import axios from 'axios'
+
+// add this baseUrl to the proxy in vite.config.js
 const baseUrl = '/api/notes'
 
 const getAll = () => {
