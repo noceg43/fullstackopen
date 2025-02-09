@@ -20,13 +20,13 @@ app.use(express.json())
 
 // another middleware used to log
 const requestLogger = (request, response, next) => {
-    // execute this before moving to the next middleware
-    console.log('Method:', request.method)
-    console.log('Path:  ', request.path)
-    console.log('Body:  ', request.body)
-    console.log('---')
-    // move to the next middleware
-    next()
+  // execute this before moving to the next middleware
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  // move to the next middleware
+  next()
 }
 app.use(requestLogger)
 // the middlewares follows the order they are defined
@@ -37,12 +37,13 @@ app.use(requestLogger)
 
 // routes
 app.get('/api/notes', (request, response) => {
-    Note.find({}).then(notes => {
-        response.json(notes)
-      })})
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
+})
 
 
-app.get('/api/notes/:id', (request, response) => {
+app.get('/api/notes/:id', (request, response, next) => {
   Note.findById(request.params.id)
     .then(note => {
 
@@ -53,7 +54,6 @@ app.get('/api/notes/:id', (request, response) => {
         response.status(404).end()
       }
     })
-    
     // Pass to the middleware error handler
     .catch(error => next(error))
 })
@@ -61,9 +61,9 @@ app.get('/api/notes/:id', (request, response) => {
 app.post('/api/notes', (request, response, next) => {
   const body = request.body
 
-  const note = new Note(  {
+  const note = new Note({
     content: body.content,
-    important: body.important,
+    important: body.important || false,
   })
 
   note.save()
@@ -75,7 +75,7 @@ app.post('/api/notes', (request, response, next) => {
 
 app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -83,15 +83,14 @@ app.delete('/api/notes/:id', (request, response, next) => {
 
 
 app.put('/api/notes/:id', (request, response, next) => {
-  const body = request.body
+  const { content, important } = request.body
 
-  // use a simple JS object, not a Mongoose object
-  const note = {
-    content: body.content,
-    important: body.important,
-  }
-
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+  // it now throws a validation error if the content does not meet the requirements
+  Note.findByIdAndUpdate(
+    request.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: 'query' },
+  )
     .then(updatedNote => {
       response.json(updatedNote)
     })
@@ -101,9 +100,9 @@ app.put('/api/notes/:id', (request, response, next) => {
 
 // Catch-all middleware for non-existent routes (404)
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' });
-  };
-  app.use(unknownEndpoint);
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
 
 
 
@@ -113,7 +112,10 @@ const errorHandler = (error, request, response, next) => {
   // throwed if the error is a validation error (for the GET request with an invalid id)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if (error.name === 'ValidationError') {
+    // throwed if the error is a validation error (for the POST request with an invalid content)
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
@@ -121,10 +123,10 @@ const errorHandler = (error, request, response, next) => {
 // this has to be the last loaded middleware, also all the routes should be registered before this!
 app.use(errorHandler)
 
-// 
+//
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
 
 
