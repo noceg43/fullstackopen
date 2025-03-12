@@ -1,6 +1,8 @@
 const config = require('./utils/config')
 const express = require('express')
 // import before the app (containing the routes) is imported
+// once imported, all the errors inside the async routes (of the controllers)
+// will be caught by the (next) function and so passed to the error handler middleware
 require('express-async-errors')
 const app = express()
 const cors = require('cors')
