@@ -1,0 +1,12 @@
+POST http://localhost:3001/api/notes/ HTTP/1.1
+content-type: application/json
+
+{
+    "content": "This is a new note",
+    "important": true,
+    "userId": "67d342dbfb617fca5d8adb22"
+}
+###
+GET http://localhost:3001/api/notes
+###
+GET http://localhost:3001/api/notes/6794b46b1550068467534c8e
