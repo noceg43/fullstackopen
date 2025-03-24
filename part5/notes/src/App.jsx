@@ -1,18 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
 import noteService from './services/notes'
 import loginService from './services/login'
+import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
+import NoteForm from './components/NoteForm'
 
 const App = () => {
     const [notes, setNotes] = useState([])
-    const [newNote, setNewNote] = useState('')
     const [showAll, setShowAll] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [user, setUser] = useState(null)
+
+
 
     // The effect hook is used to set the user object when the application is started.
     useEffect(() => {
@@ -50,41 +54,26 @@ const App = () => {
         }
     }
 
-    const loginForm = () => (
-        <form onSubmit={handleLogin}>
-            <div>
-                username
-                <input
-                    type="text"
-                    value={username}
-                    name="Username"
-                    onChange={({ target }) => setUsername(target.value)}
-                />
-            </div>
-            <div>
-                password
-                <input
-                    type="password"
-                    value={password}
-                    name="Password"
-                    onChange={({ target }) => setPassword(target.value)}
-                />
-            </div>
-            <button type="submit">login</button>
-        </form>
-    )
 
+    const loginForm = () => <Togglable buttonLabel='login'>
+        <LoginForm
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+        />
+    </Togglable>
+
+
+    // useRef used to close the note form after creating a new note
+    // pass the ref to the Togglable component
+    const noteFormRef = useRef()
     const noteForm = () => (
-        <form onSubmit={addNote}>
-            <input
-                value={newNote}
-                onChange={handleNoteChange}
-            />
-            <button type="submit">save</button>
-        </form>
+        <Togglable buttonLabel='new note' ref={noteFormRef}>
+            <NoteForm createNote={addNote} />
+        </Togglable>
     )
-
-
 
     useEffect(() => {
         noteService
@@ -94,18 +83,12 @@ const App = () => {
             })
     }, [])
 
-    const addNote = (event) => {
-        event.preventDefault()
-        const noteObject = {
-            content: newNote,
-            important: Math.random() > 0.5,
-        }
-
+    const addNote = (noteObject) => {
+        noteFormRef.current.toggleVisibility()
         noteService
             .create(noteObject)
             .then(returnedNote => {
                 setNotes(notes.concat(returnedNote))
-                setNewNote('')
             })
     }
 
@@ -128,9 +111,7 @@ const App = () => {
             })
     }
 
-    const handleNoteChange = (event) => {
-        setNewNote(event.target.value)
-    }
+
 
     const notesToShow = showAll
         ? notes
