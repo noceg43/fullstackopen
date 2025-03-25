@@ -1,13 +1,21 @@
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
+import React from 'react';
+import PropTypes from 'prop-types';
 
-  return (
-    <div className="error">
-      {message}
-    </div>
-  )
+const Notification = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+
+    return (
+        <div className="error">
+            {message}
+        </div>
+    )
 }
+
+
+Notification.propTypes = {
+    message: PropTypes.string
+};
 
 export default Notification

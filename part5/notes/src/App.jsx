@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
@@ -7,6 +7,7 @@ import loginService from './services/login'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import NoteForm from './components/NoteForm'
+
 
 const App = () => {
     const [notes, setNotes] = useState([])
@@ -101,7 +102,7 @@ const App = () => {
             .then(returnedNote => {
                 setNotes(notes.map(note => note.id !== id ? note : returnedNote))
             })
-            .catch(error => {
+            .catch(() => {
                 setErrorMessage(
                     `Note '${note.content}' was already removed from server`
                 )
