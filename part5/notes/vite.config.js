@@ -12,4 +12,10 @@ export default defineConfig({
       },
     }
   },
+  test: {
+    // necessary to use "vi" "test" and "expect" without import something on the test file
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './testSetup.js',
+  },
 })
