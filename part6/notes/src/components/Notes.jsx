@@ -27,11 +27,23 @@ Note.propTypes = {
 const Notes = () => {
 
     const dispatch = useDispatch()
-    const notes = useSelector(state => state)
+    const notes = useSelector(state => state.notes)
+
+    const filter = useSelector(state => state.filter)
+
+    const notesToShow = notes.filter(note => {
+        if (filter === 'ALL') {
+            return true
+        } else if (filter === 'IMPORTANT') {
+            return note.important
+        } else if (filter === 'NONIMPORTANT') {
+            return !note.important
+        }
+    })
 
     return (
         <ul>
-            {notes.map(note =>
+            {notesToShow.map(note =>
                 <Note
                     key={note.id}
                     note={note}

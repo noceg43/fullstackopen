@@ -1,4 +1,20 @@
-const noteReducer = (state = [], action) => {
+const initialState = [
+    {
+        content: 'reducer defines how redux store works',
+        important: true,
+        id: 1,
+    },
+    {
+        content: 'state of store can contain any data',
+        important: false,
+        id: 2,
+    },
+]
+
+const noteReducer = (state = initialState, action) => {
+    // useful print, understand that when an action is dispatched, 2 reducers are called (the noteReducer and the filterReducer)
+    console.log('ACTION: ', action)
+
     switch (action.type) {
         case 'NEW_NOTE':
             // not allowed to mutate the state directly
