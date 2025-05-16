@@ -1,3 +1,5 @@
+import { createSlice, current } from '@reduxjs/toolkit'
+
 const initialState = [
     {
         content: 'reducer defines how redux store works',
@@ -11,58 +13,41 @@ const initialState = [
     },
 ]
 
-const noteReducer = (state = initialState, action) => {
-    // useful print, understand that when an action is dispatched, 2 reducers are called (the noteReducer and the filterReducer)
-    console.log('ACTION: ', action)
-
-    switch (action.type) {
-        case 'NEW_NOTE':
-            // not allowed to mutate the state directly
-            /* state.push(action.payload)
-            return state */
-
-            // instead, create a new array with the old state and the new note
-            return [...state, action.payload]
-
-        case 'TOGGLE_IMPORTANCE': {
-            // find the note to be updated
-            const id = action.payload.id
-            const noteToChange = state.find(n => n.id === id)
-
-            // create a new note with the updated important property
-            const changedNote = { ...noteToChange, important: !noteToChange.important }
-
-            // return a new array with the updated note
-            return state.map(note => note.id !== id ? note : changedNote)
-        }
-        default:
-            return state
-    }
-}
-
 const generateId = () =>
     Number((Math.random() * 1000000).toFixed(0))
 
-// Action creators
+const noteSlice = createSlice({
+    name: 'notes',
+    initialState,
+    // here its possible to modify mutable state
+    // why? Because Immer library is used under the hood
+    reducers: {
+        createNote(state, action) {
+            const content = action.payload
+            // so it's possible to use push on an array and get the new state
+            state.push({
+                content,
+                important: false,
+                id: generateId(),
+            })
+        },
+        toggleImportanceOf(state, action) {
+            const id = action.payload
+            const noteToChange = state.find(n => n.id === id)
+            const changedNote = {
+                ...noteToChange,
+                important: !noteToChange.important
+            }
+            // use current to get the current state in a "readable" way
+            console.log(current(state))
 
-
-export const createNote = (content) => {
-    return {
-        type: 'NEW_NOTE',
-        payload: {
-            content,
-            important: false,
-            id: generateId()
+            // also using the regular map function to get a new array works
+            return state.map(note =>
+                note.id !== id ? note : changedNote
+            )
         }
-    }
-}
+    },
+})
 
-export const toggleImportanceOf = (id) => {
-    return {
-        type: 'TOGGLE_IMPORTANCE',
-        payload: { id }
-    }
-}
-
-
-export default noteReducer;
+export const { createNote, toggleImportanceOf } = noteSlice.actions
+export default noteSlice.reducer
