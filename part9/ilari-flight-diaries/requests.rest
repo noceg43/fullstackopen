@@ -1,0 +1,105 @@
+### Ping endpoint
+GET http://localhost:3000/ping
+
+###
+
+### Get all diary entries (non-sensitive)
+GET http://localhost:3000/api/diaries
+
+###
+
+### Get a specific diary entry by ID
+GET http://localhost:3000/api/diaries/1
+
+###
+
+### Get a non-existent diary entry (should return 404)
+GET http://localhost:3000/api/diaries/999
+
+###
+
+### Create a new diary entry - Valid data
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "date": "2025-07-11",
+    "weather": "sunny",
+    "visibility": "great",
+    "comment": "Beautiful day for flying, perfect visibility and calm winds"
+}
+
+###
+
+### Create a new diary entry - Another valid entry
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "date": "2025-07-10",
+    "weather": "rainy",
+    "visibility": "poor",
+    "comment": "Challenging flight conditions, had to be extra careful"
+}
+
+###
+
+### Create diary entry - Invalid weather (should fail)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "date": "2025-07-11",
+    "weather": "snowy",
+    "visibility": "good",
+    "comment": "Invalid weather type"
+}
+
+###
+
+### Create diary entry - Invalid visibility (should fail)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "date": "2025-07-11",
+    "weather": "sunny",
+    "visibility": "excellent",
+    "comment": "Invalid visibility type"
+}
+
+###
+
+### Create diary entry - Missing optional comment (should succeed)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "date": "2025-07-11",
+    "weather": "sunny",
+    "visibility": "good"
+}
+
+###
+
+### Create diary entry - Invalid date format (should fail)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "date": "invalid-date",
+    "weather": "sunny",
+    "visibility": "good",
+    "comment": "Invalid date format"
+}
+
+###
+
+### Create diary entry - Missing fields (should fail)
+POST http://localhost:3000/api/diaries
+Content-Type: application/json
+
+{
+    "weather": "sunny",
+    "comment": "Missing date and visibility"
+}
